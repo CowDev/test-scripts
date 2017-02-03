@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<title>Image test</title>
+		<style>
+			img {
+				max-width: 100%;
+				height: auto;
+			}
+		</style>
+	</head>
+	<body>
+		<span id="text-color">Setting the BODY's background to the average color in the following image:</span>
+	
+		<br/><br/>
+		
+		<img id="i" />
+		
+		<script>
+		var img = document.getElementById('i');
+		img.src = 'images/' + ( Math.floor( Math.random() * 4 ) + 1 ) + '.jpg';
+		
+		if (img.complete) {
+		  loaded()
+		} else {
+		  img.addEventListener('load', loaded)
+		  img.addEventListener('error', function() {
+		      alert('error')
+		  })
+		}
+		
+		function getContrastYIQ(hexcolor, returnValue = false ){
+			if( typeof hexcolor === 'text' ){
+				var r = parseInt(hexcolor.substr(0,2),16);
+				var g = parseInt(hexcolor.substr(2,2),16);
+				var b = parseInt(hexcolor.substr(4,2),16);
+			}else if ( typeof hexcolor === 'object' ){
+				var r = hexcolor.r;
+				var g = hexcolor.g;
+				var b = hexcolor.b;
+			}
+			var yiq = ((r*299)+(g*587)+(b*114))/1000;
+			
+			if ( returnValue ){
+				return yiq;
+			}else{
+				return (yiq >= 128) ? 'black' : 'white';
+			}
+		}
+		
+		function loaded(){
+			var rgb = getAverageRGB(img);
+		    document.body.style.backgroundColor = 'rgb('+rgb.r+','+rgb.g+','+rgb.b+')';
+		    console.log( getContrastYIQ( rgb ) );
+		    document.getElementById('text-color').style.color = getContrastYIQ( rgb );
+		}
+		 
+		function getAverageRGB(imgEl) {
+		    
+		    var blockSize = 5, // only visit every 5 pixels
+		        defaultRGB = {r:0,g:0,b:0}, // for non-supporting envs
+		        canvas = document.createElement('canvas'),
+		        context = canvas.getContext && canvas.getContext('2d'),
+		        data, width, height,
+		        i = -4,
+		        length,
+		        rgb = {r:0,g:0,b:0},
+		        count = 0;
+		        
+		    if (!context) {
+		        return defaultRGB;
+		    }
+		    
+		    height = canvas.height = imgEl.naturalHeight || imgEl.offsetHeight || imgEl.height;
+		    width = canvas.width = imgEl.naturalWidth || imgEl.offsetWidth || imgEl.width;
+		    
+		    context.drawImage(imgEl, 0, 0);
+		    
+		    try {
+		        data = context.getImageData(0, 0, width, height);
+		    } catch(e) {
+		        /* security error, img on diff domain */
+		        alert('Image is on different domain and can\'t be checked');
+		        console.log(e);
+		        return defaultRGB;
+		    }
+		    
+		    length = data.data.length;
+		    
+		    while ( (i += blockSize * 4) < length ) {
+		        ++count;
+		        rgb.r += data.data[i];
+		        rgb.g += data.data[i+1];
+		        rgb.b += data.data[i+2];
+		    }
+		    
+		    // ~~ used to floor values
+		    rgb.r = ~~(rgb.r/count);
+		    rgb.g = ~~(rgb.g/count);
+		    rgb.b = ~~(rgb.b/count);
+		    
+		    return rgb;
+		    
+		}
+		</script>
+
+	</body>
+</html>
