@@ -1,6 +1,6 @@
 from scrapy.selector import HtmlXPathSelector
 from scrapy.spiders import CrawlSpider, Rule
-from scrapy.contrib.linkextractors.sgml import SgmlLinkExtractor
+from scrapy.linkextractors import LinkExtractor
 from scrapy.item import Item, Field
 import config
 
@@ -16,7 +16,7 @@ class BrokenLinksSpider(CrawlSpider):
     allowed_domains = config.allowed_domains
     start_urls = config.start_urls
     handle_httpstatus_list = [404, 301, 302]
-    rules = (Rule(SgmlLinkExtractor(), callback='parse_item', follow=True),)
+    rules = (Rule(LinkExtractor(), callback='parse_item', follow=True),)
 
     def parse_item(self, response):
         if response.status != 200:

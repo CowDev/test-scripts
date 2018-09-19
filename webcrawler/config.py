@@ -1,3 +1,3 @@
-name = "CowDev"
-allowed_domains = ["www.cowdev.com",]
-start_urls = ["https://www.cowdev.com/", ]
+name = "Reasult"
+allowed_domains = ["www.reasult.com","www.reasult.nl","wwww.reasult.de"]
+start_urls = ["https://www.reasult.com/", ]
